@@ -80,6 +80,14 @@ export async function runPublish({
   cwd = process.cwd(),
   shouldSkipNpmRelease,
 }: PublishOptions): Promise<PublishResult> {
+  console.log(
+    "called runPublish with: ",
+    JSON.stringify(
+      { script, githubToken, createGithubReleases, cwd, shouldSkipNpmRelease },
+      null,
+      2
+    )
+  );
   let { packages, tool } = await getPackages(cwd);
   let octokit = github.getOctokit(githubToken);
 
