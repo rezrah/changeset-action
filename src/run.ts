@@ -80,20 +80,9 @@ export async function runPublish({
   cwd = process.cwd(),
   shouldSkipNpmRelease,
 }: PublishOptions): Promise<PublishResult> {
-  let octokit = github.getOctokit(githubToken);
-  let [publishCommand, ...publishArgs] = script.split(/\s+/);
-
-  let changesetPublishOutput = await getExecOutput(
-    publishCommand,
-    publishArgs,
-    { cwd }
-  );
-
-  await gitUtils.pushTags();
-
   let { packages, tool } = await getPackages(cwd);
+  let octokit = github.getOctokit(githubToken);
 
-  // do github release but skip npm release
   if (shouldSkipNpmRelease) {
     console.log("Skipping npm release, creating github releases only");
     await Promise.all(
@@ -113,6 +102,18 @@ export async function runPublish({
       })),
     };
   }
+
+  let [publishCommand, ...publishArgs] = script.split(/\s+/);
+
+  let changesetPublishOutput = await getExecOutput(
+    publishCommand,
+    publishArgs,
+    { cwd }
+  );
+
+  await gitUtils.pushTags();
+
+  // do github release but skip npm release
 
   let releasedPackages: Package[] = [];
 

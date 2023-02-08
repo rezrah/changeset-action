@@ -53,11 +53,13 @@ const getOptionalInput = (name: string) => core.getInput(name) || undefined;
       console.log("No changesets found");
       return;
     case !hasChangesets && hasPublishScript: {
+      console.log(
+        "No changesets found, attempting to publish any unpublished packages to npm"
+      );
       if (!shouldSkipNpmRelease) {
         console.log(
-          "No changesets found, attempting to publish any unpublished packages to npm"
+          "'shouldSkipNpmRelease' is false, so we will attempt to publish read/create npmrc"
         );
-
         let userNpmrcPath = `${process.env.HOME}/.npmrc`;
         if (fs.existsSync(userNpmrcPath)) {
           console.log("Found existing user .npmrc file");
