@@ -96,7 +96,7 @@ const getOptionalInput = (name: string) => core.getInput(name) || undefined;
         script: publishScript,
         githubToken,
         createGithubReleases: core.getBooleanInput("createGithubReleases"),
-        skipNpmPublish: shouldSkipNpmRelease,
+        shouldSkipNpmRelease,
       });
 
       if (result.published) {
