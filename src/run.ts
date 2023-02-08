@@ -59,6 +59,7 @@ type PublishOptions = {
   githubToken: string;
   createGithubReleases: boolean;
   cwd?: string;
+  shouldSkipNpmRelease?: boolean;
 };
 
 type PublishedPackage = { name: string; version: string };
@@ -77,6 +78,7 @@ export async function runPublish({
   githubToken,
   createGithubReleases,
   cwd = process.cwd(),
+  shouldSkipNpmRelease,
 }: PublishOptions): Promise<PublishResult> {
   let octokit = github.getOctokit(githubToken);
   let [publishCommand, ...publishArgs] = script.split(/\s+/);
@@ -90,6 +92,28 @@ export async function runPublish({
   await gitUtils.pushTags();
 
   let { packages, tool } = await getPackages(cwd);
+
+  // do github release but skip npm release
+  if (shouldSkipNpmRelease) {
+    console.log("Skipping npm release, creating github releases only");
+    await Promise.all(
+      packages.map((pkg) =>
+        createRelease(octokit, {
+          pkg,
+          tagName: `${pkg.packageJson.name}@${pkg.packageJson.version}`,
+        })
+      )
+    );
+
+    return {
+      published: true,
+      publishedPackages: packages.map((pkg) => ({
+        name: pkg.packageJson.name,
+        version: pkg.packageJson.version,
+      })),
+    };
+  }
+
   let releasedPackages: Package[] = [];
 
   if (tool !== "root") {
