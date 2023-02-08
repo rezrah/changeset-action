@@ -41,7 +41,7 @@ const getOptionalInput = (name: string) => core.getInput(name) || undefined;
     (changeset) => changeset.releases.length > 0
   );
   let hasPublishScript = !!publishScript;
-  let shouldSkipNpmRelease = core.getBooleanInput("skipNpmRelease");
+  let shouldSkipNpmRelease = core.getBooleanInput("skipNpmPublish");
 
   core.setOutput("published", "false");
   core.setOutput("publishedPackages", "[]");
